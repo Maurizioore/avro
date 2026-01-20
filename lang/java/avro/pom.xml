@@ -24,7 +24,7 @@
     <artifactId>avro-parent</artifactId>
     <groupId>org.apache.avro</groupId>
     <version>1.12.0-SNAPSHOT</version>
-    <relativePath>../</relativePath>
+    <relativePath>../pom.xml</relativePath>
   </parent>
 
   <artifactId>avro</artifactId>
@@ -55,6 +55,20 @@
         </includes>
       </resource>
     </resources>
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+      </testResource>
+      <testResource>
+        <directory>../../../share/</directory>
+        <includes>
+          <include>schemas/**</include>
+          <include>test/**</include>
+        </includes>
+        <targetPath>share/</targetPath>
+      </testResource>
+    </testResources>
+
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -67,155 +81,28 @@
           </archive>
         </configuration>
       </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <parallel>none</parallel>
-        </configuration>
-        <executions>
-          <execution>
-            <id>test-with-custom-coders</id>
-            <phase>test</phase>
-            <goals>
-              <goal>test</goal>
-            </goals>
-            <configuration>
-              <systemPropertyVariables>
-                <org.apache.avro.specific.use_custom_coders>true</org.apache.avro.specific.use_custom_coders>
-              </systemPropertyVariables>
-            </configuration>
-          </execution>
-          <execution>
-            <id>test-with-fast-reader</id>
-            <phase>test</phase>
-            <goals>
-              <goal>test</goal>
-            </goals>
-            <configuration>
-              <systemPropertyVariables>
-                <org.apache.avro.fastread>true</org.apache.avro.fastread>
-              </systemPropertyVariables>
-            </configuration>
-          </execution>
-        </executions>
+        <version>3.2.2</version> <configuration>
+        <argLine>
+          --add-opens java.base/java.lang=ALL-UNNAMED
+          --add-opens java.base/java.util=ALL-UNNAMED
+          --add-exports java.base/sun.misc=ALL-UNNAMED
+        </argLine>
+      </configuration>
       </plugin>
+
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>0.8.11</version>
+      </plugin>
+
     </plugins>
   </build>
 
-  <profiles>
-    <profile>
-      <id>interop-data-generate</id>
-      <activation>
-        <activeByDefault>false</activeByDefault>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>exec-maven-plugin</artifactId>
-            <version>${exec-plugin.version}</version>
-            <executions>
-              <!-- Generate random data for interop tests, using null codec -->
-              <execution>
-                <id>interop-generate-null-codec</id>
-                <phase>generate-resources</phase>
-                <configuration>
-                  <mainClass>org.apache.avro.util.RandomData</mainClass>
-                  <arguments>
-                    <argument>../../../share/test/schemas/interop.avsc</argument>
-                    <argument>../../../build/interop/data/java.avro</argument>
-                    <argument>100</argument>
-                  </arguments>
-                </configuration>
-                <goals><goal>java</goal></goals>
-              </execution>
-
-              <!-- Generate random data for interop tests, using deflate codec -->
-              <execution>
-                <id>interop-generate-deflate-codec</id>
-                <phase>generate-resources</phase>
-                <configuration>
-                  <mainClass>org.apache.avro.util.RandomData</mainClass>
-                  <arguments>
-                    <argument>../../../share/test/schemas/interop.avsc</argument>
-                    <argument>../../../build/interop/data/java_deflate.avro</argument>
-                    <argument>100</argument>
-                    <argument>deflate</argument>
-                  </arguments>
-                </configuration>
-                <goals><goal>java</goal></goals>
-              </execution>
-
-              <!-- Generate random data for interop tests, using snappy codec -->
-              <execution>
-                <id>interop-generate-snappy-codec</id>
-                <phase>generate-resources</phase>
-                <configuration>
-                  <mainClass>org.apache.avro.util.RandomData</mainClass>
-                  <arguments>
-                    <argument>../../../share/test/schemas/interop.avsc</argument>
-                    <argument>../../../build/interop/data/java_snappy.avro</argument>
-                    <argument>100</argument>
-                    <argument>snappy</argument>
-                  </arguments>
-                </configuration>
-                <goals><goal>java</goal></goals>
-              </execution>
-
-              <!-- Generate random data for interop tests, using bzip2 codec -->
-              <execution>
-                <id>interop-generate-bzip2-codec</id>
-                <phase>generate-resources</phase>
-                <configuration>
-                  <mainClass>org.apache.avro.util.RandomData</mainClass>
-                  <arguments>
-                    <argument>../../../share/test/schemas/interop.avsc</argument>
-                    <argument>../../../build/interop/data/java_bzip2.avro</argument>
-                    <argument>100</argument>
-                    <argument>bzip2</argument>
-                  </arguments>
-                </configuration>
-                <goals><goal>java</goal></goals>
-              </execution>
-
-              <!-- Generate random data for interop tests, using xz codec -->
-              <execution>
-                <id>interop-generate-xz-codec</id>
-                <phase>generate-resources</phase>
-                <configuration>
-                  <mainClass>org.apache.avro.util.RandomData</mainClass>
-                  <arguments>
-                    <argument>../../../share/test/schemas/interop.avsc</argument>
-                    <argument>../../../build/interop/data/java_xz.avro</argument>
-                    <argument>100</argument>
-                    <argument>xz</argument>
-                  </arguments>
-                </configuration>
-                <goals><goal>java</goal></goals>
-              </execution>
-
-              <!-- Generate random data for interop tests, using zstandard codec -->
-              <execution>
-                <id>interop-generate-zstandard-codec</id>
-                <phase>generate-resources</phase>
-                <configuration>
-                  <mainClass>org.apache.avro.util.RandomData</mainClass>
-                  <arguments>
-                    <argument>../../../share/test/schemas/interop.avsc</argument>
-                    <argument>../../../build/interop/data/java_zstandard.avro</argument>
-                    <argument>100</argument>
-                    <argument>zstandard</argument>
-                  </arguments>
-                </configuration>
-                <goals><goal>java</goal></goals>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
 
   <dependencies>
     <dependency>
@@ -250,5 +137,42 @@
       <artifactId>hamcrest-library</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
+
+
+  <profiles>
+    <profile>
+      <id>coverage</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>prepare-agent</id>
+                <goals>
+                  <goal>prepare-agent</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>report</id>
+                <goals>
+                  <goal>report</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>
