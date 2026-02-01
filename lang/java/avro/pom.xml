@@ -106,12 +106,17 @@
         <version>1.22.0</version> <configuration>
         <targetClasses>
           <param>org.apache.avro.Schema</param>
+          <param>org.apache.avro.reflect.ReflectDatumReader</param>
         </targetClasses>
 
         <targetTests>
           <param>org.apache.avro.SchemaParserLLMTest</param>
           <param>org.apache.avro.SchemaParserTest</param>
           <param>org.apache.avro.SchemaParserWhiteBoxTest</param>
+          <param>org.apache.avro.reflect.ReflectDatumReaderCoverageTest</param>
+          <param>org.apache.avro.reflect.ReflectDatumReaderLLMTest</param>
+          <param>org.apache.avro.reflect.ReflectDatumReaderTest</param>
+          <param>org.apache.avro.reflect.ReflectDatumReaderMutantTest</param>
         </targetTests>
 
         <outputFormats>

@@ -193,7 +193,6 @@ public class ReflectDatumReaderLLMTest {
    * - Stato Iniziale: ArrayList vuota
    * - Input: pos=0, value="test"
    * - Oracolo:
-   * L'elemento "test" viene aggiunto alla Collection.
    * ReflectDatumReader non supporta addToArray per Collection.
    */
 
